@@ -1,18 +1,29 @@
 const path = require("path");
 const http = require("http");
+const os = require("os");
 const express = require("express");
 const socketio = require("socket.io");
 const Filter = require("bad-words");
 const { generateMessage } = require("../src/utils/messages");
 const { generateLocationMessage } = require("../src/utils/messages");
 const { getUser, removeUser, addUser, getUsersInRoom } = require("./utils/users");
-
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
+// app.get("/", (req, res) => {
+//  res.send(`Processed by container ID: ${os.hostname}`);
+// });
+
 const publicDirectoryPath = path.join(__dirname, "../public");
 app.use(express.static(publicDirectoryPath));
+
+app.set("view engine", "hbs");
+app.get("", (req, res) => {
+  res.render("index", {
+    containerId: os.hostname(),
+  });
+});
 
 io.on("connection", (socket) => {
   console.log("new websocket connection");
